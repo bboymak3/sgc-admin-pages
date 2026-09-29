@@ -8,7 +8,7 @@
 export async function onRequestGet(context) {
   const { env, params } = context;
   try {
-    const cita = await env.CITAS_DB.prepare('SELECT * FROM sgc_cit_Citas WHERE id = ?').bind(params.id).first();
+    const cita = await env.CITAS_DB.prepare('SELECT * FROM sgc_cit_Citas WHERE id = ? AND tenant_id = 1').bind(params.id).first();
     if (!cita) {
       return new Response(JSON.stringify({ success: false, error: 'Cita no encontrada' }), {
         status: 404, headers: { 'Content-Type': 'application/json' }
@@ -56,10 +56,10 @@ export async function onRequestPut(context) {
     valores.push(params.id);
 
     await env.CITAS_DB.prepare(
-      `UPDATE sgc_cit_Citas SET ${campos.join(', ')} WHERE id = ?`
+      `UPDATE sgc_cit_Citas SET ${campos.join(', ')} WHERE id = ? AND tenant_id = 1`
     ).bind(...valores).run();
 
-    const actualizada = await env.CITAS_DB.prepare('SELECT * FROM sgc_cit_Citas WHERE id = ?').bind(params.id).first();
+    const actualizada = await env.CITAS_DB.prepare('SELECT * FROM sgc_cit_Citas WHERE id = ? AND tenant_id = 1').bind(params.id).first();
 
     return new Response(JSON.stringify({ success: true, cita: actualizada }), {
       headers: { 'Content-Type': 'application/json' }
@@ -75,7 +75,7 @@ export async function onRequestPut(context) {
 export async function onRequestDelete(context) {
   const { env, params } = context;
   try {
-    await env.CITAS_DB.prepare('DELETE FROM sgc_cit_Citas WHERE id = ?').bind(params.id).run();
+    await env.CITAS_DB.prepare('DELETE FROM sgc_cit_Citas WHERE id = ? AND tenant_id = 1').bind(params.id).run();
     return new Response(JSON.stringify({ success: true }), {
       headers: { 'Content-Type': 'application/json' }
     });

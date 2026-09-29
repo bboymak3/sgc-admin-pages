@@ -240,3 +240,18 @@ npm run dev   # npx wrangler pages dev . --port 3001
 ## 📄 Licencia
 
 Propietario — **SGC**. Todos los derechos reservados.
+
+---
+
+## Seguridad y pruebas (2026-09-29)
+
+- `JWT_SECRET` ya no está en el código ni en `wrangler.toml`: configúralo con
+  `wrangler pages secret put JWT_SECRET --project-name sgc-admin` (sin él la API responde 503).
+- Tokens de 12 h, firma verificada en tiempo constante y solo `alg: HS256`; cookie `SameSite=Strict`.
+- Contraseñas PBKDF2 con salt (los hashes SHA-256 se migran al iniciar sesión); se quitó la pista `admin/admin123`
+  del login y el panel pide cambiarla al entrar con la clave por defecto (`POST /api/auth/cambiar-password`).
+- Este panel es del taller SGC: todas las consultas de citas filtran `tenant_id = 1`
+  (antes mostraba y permitía editar/borrar citas de otros negocios del SaaS).
+- Calendario: el JOIN usaba la tabla vacía `Clientes`; ahora `sgc_ord_Clientes`.
+
+Pruebas: `npm test` (middleware JWT, login, cambio de contraseña, aislamiento por tenant, dashboard y calendario).

@@ -11,7 +11,7 @@ export async function onRequestPost(context) {
     const citaId = params.id;
     const { motivo } = await request.json();
 
-    const cita = await env.CITAS_DB.prepare('SELECT * FROM sgc_cit_Citas WHERE id = ?').bind(citaId).first();
+    const cita = await env.CITAS_DB.prepare('SELECT * FROM sgc_cit_Citas WHERE id = ? AND tenant_id = 1').bind(citaId).first();
     if (!cita) {
       return new Response(JSON.stringify({ success: false, error: 'Cita no encontrada' }), {
         status: 404, headers: { 'Content-Type': 'application/json' }
@@ -24,7 +24,7 @@ export async function onRequestPost(context) {
            estado = 'cancelada',
            motivo_rechazo = ?,
            updated_at = datetime('now', '-3 hours')
-       WHERE id = ?`
+       WHERE id = ? AND tenant_id = 1`
     ).bind(motivo || 'Sin motivo especificado', citaId).run();
 
     return new Response(JSON.stringify({

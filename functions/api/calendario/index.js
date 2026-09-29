@@ -52,7 +52,7 @@ export async function onRequestGet(context) {
        FROM sgc_ord_AgendaTecnicos a
        LEFT JOIN sgc_ord_Tecnicos t ON a.tecnico_id = t.id
        LEFT JOIN sgc_ord_OrdenesTrabajo o ON a.orden_id = o.id
-       LEFT JOIN Clientes c ON o.cliente_id = c.id
+       LEFT JOIN sgc_ord_Clientes c ON o.cliente_id = c.id
        LEFT JOIN sgc_ord_Vehiculos v ON o.vehiculo_id = v.id
        ${agendaWhere}
        ORDER BY a.fecha_inicio ASC`
@@ -114,7 +114,7 @@ export async function onRequestGet(context) {
               COALESCE(NULLIF(o.modelo,''), v.modelo) as modelo
        FROM sgc_ord_OrdenesTrabajo o
        LEFT JOIN sgc_ord_Tecnicos t ON o.tecnico_asignado_id = t.id
-       LEFT JOIN Clientes c ON o.cliente_id = c.id
+       LEFT JOIN sgc_ord_Clientes c ON o.cliente_id = c.id
        LEFT JOIN sgc_ord_Vehiculos v ON o.vehiculo_id = v.id
        WHERE ${otConds.join(' AND ')}
        ORDER BY o.fecha_programada ASC`
@@ -154,7 +154,7 @@ export async function onRequestGet(context) {
     // porque ya están representadas en la sección de OT/AgendaTecnicos.
     // Solo mostrar citas pendientes (sin OT asociada).
     // ============================================
-    let citasConds = ['fecha_cita >= ?', 'fecha_cita <= ?', 'orden_enviada = 0'];
+    let citasConds = ['tenant_id = 1', 'fecha_cita >= ?', 'fecha_cita <= ?', 'orden_enviada = 0'];
     let citasParams = [inicio, fin];
     // No filtramos por estado_aprobacion para mostrar todas las pendientes
 

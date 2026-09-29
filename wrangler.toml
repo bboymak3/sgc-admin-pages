@@ -13,8 +13,9 @@ database_name = "citas"
 database_id = "678b4adc-232d-43db-86ec-230828268161"
 
 [vars]
-JWT_SECRET = "sgc-secret-key-change-in-production"
-ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9"
 CITAS_WORKER_URL = "https://sgc-citas.activo.workers.dev"
 ORDENES_PAGES_URL = "https://sgc-ordenes-di7.pages.dev"
+
+# Secrets (NO van en este archivo):
+#   wrangler pages secret put JWT_SECRET --project-name sgc-admin   (openssl rand -hex 32)
+# Los usuarios están en la tabla sgc_cit_AdminUsers (contraseñas PBKDF2).

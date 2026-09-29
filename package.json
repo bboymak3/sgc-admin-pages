@@ -5,6 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "npx wrangler pages dev . --port 3001",
-    "deploy": "npx wrangler pages deploy . --project-name sgc-admin"
-  }
+    "deploy": "npx wrangler pages deploy . --project-name sgc-admin",
+    "test": "node --no-warnings --test \"test/**/*.test.js\""
+  },
+  "type": "module"
 }

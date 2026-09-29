@@ -12,7 +12,7 @@ export async function onRequestPost(context) {
     const body = await request.json().catch(() => ({}));
     const tecnicoId = body.tecnico_id || null;
 
-    const cita = await env.CITAS_DB.prepare('SELECT * FROM sgc_cit_Citas WHERE id = ?').bind(citaId).first();
+    const cita = await env.CITAS_DB.prepare('SELECT * FROM sgc_cit_Citas WHERE id = ? AND tenant_id = 1').bind(citaId).first();
     if (!cita) {
       return new Response(JSON.stringify({ success: false, error: 'Cita no encontrada' }), {
         status: 404, headers: { 'Content-Type': 'application/json' }
@@ -70,7 +70,7 @@ export async function onRequestPost(context) {
            orden_enviada = 1,
            numero_orden_sgc = ?,
            updated_at = datetime('now', '-3 hours')
-       WHERE id = ?`
+       WHERE id = ? AND tenant_id = 1`
     ).bind(nuevoNum, citaId).run();
 
     if (tecnicoId && cita.fecha_cita) {

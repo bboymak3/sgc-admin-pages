@@ -54,7 +54,20 @@ async function doLogin(username, password) {
     throw new Error(data.error || 'Error al iniciar sesión');
   }
   setSession(data.token, data.user);
+  if (data.debe_cambiar_password) setTimeout(cambiarPassword, 300);
   return data.user;
+}
+
+// Pide cambiar la contraseña por defecto (admin123) tras el login
+async function cambiarPassword() {
+  const actual = prompt('Por seguridad cambia la contraseña por defecto.\n\nContraseña actual:');
+  if (!actual) return;
+  const nueva = prompt('Nueva contraseña (mínimo 10 caracteres):');
+  if (!nueva) return;
+  if (prompt('Repite la nueva contraseña:') !== nueva) { alert('Las contraseñas no coinciden'); return; }
+  const resp = await apiFetch('/api/auth/cambiar-password', { method: 'POST', body: JSON.stringify({ actual, nueva }) });
+  const data = await resp.json().catch(() => ({}));
+  alert(data.success ? 'Contraseña actualizada ✅' : ('No se pudo cambiar: ' + (data.error || 'error')));
 }
 
 function showLogin() {

@@ -9,23 +9,23 @@ export async function onRequestGet(context) {
   try {
     // === CITAS === (sgc_citas_db)
     const citasHoy = await env.CITAS_DB.prepare(
-      "SELECT COUNT(*) as total FROM sgc_cit_Citas WHERE fecha_cita = date('now', '-3 hours')"
+      "SELECT COUNT(*) as total FROM sgc_cit_Citas WHERE tenant_id = 1 AND fecha_cita = date('now', '-3 hours')"
     ).first();
 
     const citasPendientesAprob = await env.CITAS_DB.prepare(
-      "SELECT COUNT(*) as total FROM sgc_cit_Citas WHERE estado_aprobacion = 'pendiente' AND estado = 'confirmada'"
+      "SELECT COUNT(*) as total FROM sgc_cit_Citas WHERE tenant_id = 1 AND estado_aprobacion = 'pendiente' AND estado = 'confirmada'"
     ).first();
 
     const citasAprobadas = await env.CITAS_DB.prepare(
-      "SELECT COUNT(*) as total FROM sgc_cit_Citas WHERE estado_aprobacion = 'aprobada'"
+      "SELECT COUNT(*) as total FROM sgc_cit_Citas WHERE tenant_id = 1 AND estado_aprobacion = 'aprobada'"
     ).first();
 
     const citasMes = await env.CITAS_DB.prepare(
-      "SELECT COUNT(*) as total FROM sgc_cit_Citas WHERE strftime('%Y-%m', fecha_cita) = strftime('%Y-%m', 'now', '-3 hours')"
+      "SELECT COUNT(*) as total FROM sgc_cit_Citas WHERE tenant_id = 1 AND strftime('%Y-%m', fecha_cita) = strftime('%Y-%m', 'now', '-3 hours')"
     ).first();
 
     const citasPorServicio = await env.CITAS_DB.prepare(
-      "SELECT servicio, COUNT(*) as total FROM sgc_cit_Citas WHERE strftime('%Y-%m', fecha_cita) = strftime('%Y-%m', 'now', '-3 hours') GROUP BY servicio ORDER BY total DESC LIMIT 10"
+      "SELECT servicio, COUNT(*) as total FROM sgc_cit_Citas WHERE tenant_id = 1 AND strftime('%Y-%m', fecha_cita) = strftime('%Y-%m', 'now', '-3 hours') GROUP BY servicio ORDER BY total DESC LIMIT 10"
     ).all();
 
     // === ORDENES === (sgc_ordenes_db)
@@ -55,6 +55,7 @@ export async function onRequestGet(context) {
       `SELECT c.id, c.fecha_cita, c.hora_cita, c.servicio, c.nombre_cliente, c.telefono,
               c.patente, c.estado, c.estado_aprobacion, c.canal, c.tipo_atencion
        FROM sgc_cit_Citas c
+       WHERE c.tenant_id = 1
        ORDER BY c.created_at DESC
        LIMIT 10`
     ).all();
@@ -63,7 +64,7 @@ export async function onRequestGet(context) {
     const proximasCitas = await env.CITAS_DB.prepare(
       `SELECT c.id, c.fecha_cita, c.hora_cita, c.servicio, c.nombre_cliente, c.patente, c.tipo_atencion
        FROM sgc_cit_Citas c
-       WHERE c.fecha_cita >= date('now', '-3 hours')
+       WHERE c.tenant_id = 1 AND c.fecha_cita >= date('now', '-3 hours')
          AND c.estado_aprobacion IN ('pendiente', 'aprobada')
        ORDER BY c.fecha_cita ASC, c.hora_cita ASC
        LIMIT 10`

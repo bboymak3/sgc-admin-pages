@@ -20,7 +20,8 @@ export async function onRequestGet(context) {
     const busqueda = url.searchParams.get('q') || '';
     const limite = Math.min(parseInt(url.searchParams.get('limit') || '100'), 500);
 
-    let condiciones = [];
+    // Panel del taller SGC: solo citas del tenant 1
+    let condiciones = ['tenant_id = 1'];
     let params = [];
 
     if (estado) {
@@ -40,7 +41,7 @@ export async function onRequestGet(context) {
       params.push(`%${busqueda}%`, `%${busqueda}%`, `%${busqueda}%`);
     }
 
-    const where = condiciones.length ? 'WHERE ' + condiciones.join(' AND ') : '';
+    const where = 'WHERE ' + condiciones.join(' AND ');
 
     const result = await env.CITAS_DB.prepare(
       `SELECT id, fecha_cita, hora_cita, servicio, estado, estado_aprobacion,
@@ -92,8 +93,8 @@ export async function onRequestPost(context) {
         nombre_cliente, telefono, email,
         patente, marca, modelo, anio, color,
         tipo_atencion, direccion, referencia_direccion,
-        observaciones, duracion_minutos, canal, created_at, updated_at
-      ) VALUES (?, ?, ?, 'confirmada', 'pendiente', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', datetime('now', '-3 hours'), datetime('now', '-3 hours'))`
+        observaciones, duracion_minutos, canal, tenant_id, created_at, updated_at
+      ) VALUES (?, ?, ?, 'confirmada', 'pendiente', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', 1, datetime('now', '-3 hours'), datetime('now', '-3 hours'))`
     ).bind(
       fecha_cita, hora_cita, servicio,
       nombre_cliente || null, telefono || null, email || null,
